@@ -1,6 +1,5 @@
 # importing libraries
 import cv2
-import math
 import numpy as np
 from numba import njit
 

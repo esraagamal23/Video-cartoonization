@@ -6,11 +6,23 @@ from numba import njit
 
 @njit
 def gaussian(x, sigma):
+    '''
+    Gaussian function is resposible for calculating the corresponding gaussian kernal value
+
+    Key arguments:
+    x : Value to be evaluated for
+    sigma : The standard diviation
+    '''
     return (1.0 / math.sqrt(2 * math.pi) * sigma) * math.exp(-1 * (x ** 2) / (2 * sigma ** 2))
 
-# get the histogram of the image
 @njit
 def get_hist(img):
+    '''
+    Get the histogram of the given image
+
+    key arguments:
+    img: The needed image
+    '''
     hist_img = np.zeros((256))
     for i in range(len(img)):
         for j in range(len(img[0])):
@@ -19,6 +31,15 @@ def get_hist(img):
 
 @njit
 def find_median(histogram, aSize):
+    '''
+    Get the median of the given window from its histogram
+    
+    Details: If we have a histogram so it's ordered by default, then if we sum the values from the one end
+    till we reached the value half the size of the window so, the corresponding pixel is the median value
+
+    key arguments:
+    img: The needed image
+    '''
     histogram = np.cumsum(histogram)
     for i in range(len(histogram)):
         if histogram[i] > (aSize ** 2) / 2:
@@ -27,17 +48,38 @@ def find_median(histogram, aSize):
 
 @njit
 def add_to_hist(histogram, arr):
+    '''
+    This function add the next vertical raw beside the window to the histogram
+
+    key arguments:
+    histogram: The histogram
+    arr: The array to be added
+    '''
     for i in arr:
         histogram[i] += 1
 
 @njit
 def sub_from_hist(histogram, arr):
+    '''
+    This function subtract the previous vertical raw beside the window to the histogram
+
+    key arguments:
+    histogram: The histogram
+    arr: The array to be subtract
+    '''
     for i in arr:
         if(histogram[i]):
             histogram[i] -= 1
 
 @njit
 def bilateral_filter_own(img, aSize):
+    '''
+    This function apply the median filter with Huang's algorithm to blur the image and preserve the edges
+
+    key arguments:
+    img: The needed image
+    aSize: The window diameter and must be odd
+    '''
     source_img = np.copy(img)
     raw, col = img.shape
     offset = aSize // 2
@@ -56,8 +98,19 @@ def bilateral_filter_own(img, aSize):
     return source_img
 
 def cartoonize(img, aSize):
+    '''
+    This function cartoonize the image by applying multiple filter
+    filters:
+        - median filter -> to blur the image preserving its edges
+        - edges with adaptive threshold -> to get the edges of the image
+        - bitwise and -> to merge the blured image with the edges
+    
+    key arguments:
+    img: The needed image
+    aSize: The window size of the blur filter
+    '''
     # get the gray image for easy calculations
-    gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     # apply median filter
     for i in range(3):
         img[:, :, i] = bilateral_filter_own(img[:, :, i], aSize)
@@ -70,7 +123,7 @@ def cartoonize(img, aSize):
 if __name__ == "__main__":
     
     # reading image
-    img = cv2.imread("photo2.jpg")
+    img = cv2.imread("Images/photo2.jpg")
     cartoon = cartoonize(img, 7)
     cv2.imshow("Image", cartoon)
 

@@ -13,7 +13,7 @@ def gaussian(x, sigma):
     x : Value to be evaluated for
     sigma : The standard diviation
     '''
-    return (1.0 / math.sqrt(2 * math.pi) * sigma) * math.exp(-1 * (x ** 2) / (2 * sigma ** 2))
+    return (1.0 / np.sqrt(2 * np.pi) * sigma) * np.exp(-1 * (x ** 2) / (2 * sigma ** 2))
 
 @njit
 def get_hist(img):
@@ -123,9 +123,9 @@ def cartoonize(img, aSize):
 if __name__ == "__main__":
     
     # reading image
-    img = cv2.imread("Images/photo2.jpg")
+    img = cv2.imread("Images/giraffe.jpg")
     cartoon = cartoonize(img, 7)
-    cv2.imshow("Image", cartoon)
+    cv2.imshow("Cartoon", cartoon)
 
     cv2.waitKey(0)
     cv2.destroyAllWindows()
